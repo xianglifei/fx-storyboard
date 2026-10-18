@@ -243,31 +243,43 @@ function el(tag, className, text) {
   return node;
 }
 
+/* 徽章：有媒体 → 媒体类型；无媒体有描述 → 文字卡；全空 → 未填媒体 */
+function badgeFor(item) {
+  const src = String(item.src || '').trim();
+  if (src) {
+    const type = detectType(src);
+    return { label: TYPE_LABEL[type], cls: type };
+  }
+  if (String(item.note || '').trim()) return { label: '文字卡', cls: 'text' };
+  return { label: '未填媒体', cls: 'muted' };
+}
+
+/* 预览：仅在真有内容可看时才生成（内存文件、或可加载的图片/视频地址），否则返回 null */
 function buildPreview(item) {
-  const type = detectType(item.src);
-  const holder = el('div', 'preview');
+  const src = String(item.src || '').trim();
+  const type = detectType(src);
   const rec = objUrls.get(item.id);
   let mediaSrc = null;
 
   if (rec) mediaSrc = rec.url;
   else {
-    const s = item.src.trim();
-    if (/^https?:\/\//.test(s)) mediaSrc = s;
-    else if (location.protocol === 'file:' && s.startsWith('/')) mediaSrc = 'file://' + s;
+    if (/^https?:\/\//.test(src)) mediaSrc = src;
+    else if (location.protocol === 'file:' && src.startsWith('/')) mediaSrc = 'file://' + src;
   }
+  if (!mediaSrc || (type !== 'image' && type !== 'video')) return null;
 
+  const holder = el('div', 'preview');
   const fallback = () => { holder.innerHTML = ''; holder.textContent = TYPE_ICON[type]; holder.classList.remove('clickable'); };
   const openIt = () => { if (mediaSrc) window.open(mediaSrc, '_blank'); };
 
-  if (mediaSrc && type === 'image') {
+  if (type === 'image') {
     const img = el('img');
-    img.alt = item.src || '预览';
+    img.alt = src;
     img.onload = () => holder.classList.add('clickable');
     img.onerror = fallback;
     img.src = mediaSrc;
     holder.appendChild(img);
-    holder.addEventListener('click', openIt);
-  } else if (mediaSrc && type === 'video') {
+  } else {
     const v = document.createElement('video');
     v.muted = true;
     v.preload = 'metadata';
@@ -275,25 +287,22 @@ function buildPreview(item) {
     v.onerror = fallback;
     v.src = mediaSrc;
     holder.appendChild(v);
-    holder.addEventListener('click', openIt);
-  } else {
-    holder.textContent = TYPE_ICON[type];
-    if (mediaSrc && type === 'audio') holder.title = '点击播放';
-    if (mediaSrc && type === 'audio') holder.addEventListener('click', openIt);
-    if (mediaSrc && type === 'audio') holder.classList.add('clickable');
   }
+  holder.addEventListener('click', openIt);
   return holder;
 }
 
 function refreshMediaUI(tr, item) {
-  const type = detectType(item.src);
+  const b = badgeFor(item);
   const badge = tr.querySelector('.badge');
-  badge.textContent = TYPE_LABEL[type];
-  badge.className = 'badge ' + type;
+  badge.textContent = b.label;
+  badge.className = 'badge ' + b.cls;
 
-  const oldPreview = tr.querySelector('.preview');
+  const sub = tr.querySelector('.media-sub');
+  const oldPreview = sub.querySelector('.preview');
+  if (oldPreview) oldPreview.remove();
   const newPreview = buildPreview(item);
-  oldPreview.replaceWith(newPreview);
+  if (newPreview) sub.insertBefore(newPreview, sub.querySelector('.path-hint'));
 
   const hint = tr.querySelector('.path-hint');
   const s = item.src.trim();
@@ -322,7 +331,11 @@ function createRowEl(item, index) {
   top.append(srcInput, pickBtn);
 
   const sub = el('div', 'media-sub');
-  sub.append(el('span', 'badge ' + detectType(item.src), TYPE_LABEL[detectType(item.src)]), buildPreview(item), el('span', 'path-hint'));
+  const b = badgeFor(item);
+  sub.append(el('span', 'badge ' + b.cls, b.label));
+  const pv = buildPreview(item);
+  if (pv) sub.appendChild(pv);
+  sub.append(el('span', 'path-hint'));
 
   tdMedia.append(top, sub);
 

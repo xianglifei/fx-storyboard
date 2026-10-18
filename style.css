@@ -170,6 +170,7 @@ td.idx { font-size: 15px; font-weight: 600; color: var(--ink-faint); text-align:
 .badge.link   { background: #eff6ff; color: #1d4ed8; }
 .badge.file   { background: #f4f4f5; color: #52525b; }
 .badge.text   { background: #fdf2f8; color: #be185d; }
+.badge.muted  { background: #f4f4f5; color: var(--ink-faint); font-weight: 500; }
 
 .preview {
   width: 76px;
