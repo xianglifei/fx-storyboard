@@ -385,7 +385,8 @@ function updateStats() {
 
 function fitTextarea(ta) {
   ta.style.height = 'auto';
-  ta.style.height = ta.scrollHeight + 'px';
+  // 空白时不按 scrollHeight 撑高：Chromium 会把占位文字算进 scrollHeight，窄列下会把行撑得很高
+  if (ta.value) ta.style.height = ta.scrollHeight + 'px';
 }
 
 /* ---------- 下载 ---------- */

@@ -25,17 +25,13 @@ body {
 /* ---------- 顶栏 ---------- */
 
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px 16px;
   padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
+  background: var(--card);
   border-bottom: 1px solid var(--line);
 }
 
@@ -106,15 +102,14 @@ main { max-width: 1120px; margin: 0 auto; padding: 20px 24px 64px; }
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
-table { width: 100%; border-collapse: collapse; }
+/* 固定列宽 + 最小总宽：窗口变窄时表格横向滚动，而不是把描述列挤没 */
+table { width: 100%; min-width: 820px; table-layout: fixed; border-collapse: collapse; }
 
 thead th {
-  position: sticky;
-  top: 57px;
-  z-index: 5;
   background: #fbfbfc;
   text-align: left;
   font-size: 12px;
@@ -134,8 +129,8 @@ tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: #fcfcfd; }
 
 .col-idx { width: 52px; text-align: center; }
-.col-media { width: 44%; }
-.col-ops { width: 118px; }
+.col-media { width: 40%; }
+.col-ops { width: 156px; }
 
 td.idx { font-size: 15px; font-weight: 600; color: var(--ink-faint); text-align: center; padding-top: 14px; }
 
