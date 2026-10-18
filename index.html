@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storyboard · 视频内容编排器</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">🎬</span><strong>Storyboard</strong><span class="sub">视频内容编排器</span></div>
+  <div class="toolbar">
+    <span class="group-label">导出编排单</span>
+    <button id="btn-md" class="btn primary" title="导出 Markdown（默认，对 AI Agent 最友好）">Markdown</button>
+    <button id="btn-json" class="btn" title="导出 JSON">JSON</button>
+    <button id="btn-xml" class="btn" title="导出 XML">XML</button>
+    <span class="sep"></span>
+    <button id="btn-saveproj" class="btn" title="把当前编排保存为 .storyboard.json 工程文件">保存工程</button>
+    <button id="btn-loadproj" class="btn" title="从 .storyboard.json 工程文件恢复">载入工程</button>
+    <button id="btn-clear" class="btn danger" title="清空全部内容">清空</button>
+  </div>
+</header>
+
+<main>
+  <section class="meta">
+    <label class="title-field">
+      <span class="field-label">视频标题</span>
+      <input id="field-title" type="text" placeholder="例如：卡卡产品演示（将用作导出文件名）" autocomplete="off">
+    </label>
+    <label class="notes-field">
+      <span class="field-label">全局说明 <em>观众 / 风格 / 总时长 / 画幅 / 配乐等，会写进导出文档头部</em></span>
+      <textarea id="field-notes" rows="2" placeholder="例如：观众为潜在用户；风格轻松明快；总长约 60 秒；1080p/30fps；需要轻音乐背景。"></textarea>
+    </label>
+  </section>
+
+  <section class="sheet" id="sheet">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-idx">序号</th>
+          <th class="col-media">媒体素材（本地绝对路径或网址）</th>
+          <th class="col-note">内容描述</th>
+          <th class="col-ops">操作</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="sheet-foot">
+      <button id="btn-add" class="btn">＋ 添加一行</button>
+      <span id="stats" class="stats"></span>
+    </div>
+    <p class="hint">提示：受浏览器安全限制，拖入 / 选择文件只能拿到<b>文件名</b>（用于预览），完整路径请粘贴补全；只填描述、不填媒体的行会作为「文字卡」导出。</p>
+  </section>
+</main>
+
+<input type="file" id="file-pick" accept="image/*,video/*,audio/*" hidden>
+<input type="file" id="proj-pick" accept=".json,application/json" hidden>
+
+<script src="app.js"></script>
+</body>
+</html>
